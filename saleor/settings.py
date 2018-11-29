@@ -50,42 +50,40 @@ if REDIS_URL:
 CACHES = {'default': django_cache_url.config()}
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://saleor:saleor@localhost:5432/saleor',
-        conn_max_age=600)}
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_ROOT, 'db.sqlite3'),
+    }
+}
 
 
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 LANGUAGES = [
-    ('ar', _('Arabic')),
     ('bg', _('Bulgarian')),
-    ('bn', _('Bengali')),
     ('cs', _('Czech')),
-    ('da', _('Danish')),
     ('de', _('German')),
     ('en', _('English')),
     ('es', _('Spanish')),
-    ('fa', _('Persian')),
+    ('fa-ir', _('Persian (Iran)')),
     ('fr', _('French')),
     ('hu', _('Hungarian')),
     ('it', _('Italian')),
     ('ja', _('Japanese')),
     ('ko', _('Korean')),
-    ('mn', _('Mongolian')),
     ('nb', _('Norwegian')),
     ('nl', _('Dutch')),
     ('pl', _('Polish')),
-    ('pt-br', _('Brazilian Portuguese')),
+    ('pt-br', _('Portuguese (Brazil)')),
     ('ro', _('Romanian')),
     ('ru', _('Russian')),
+    ('ru-ru', _('Russian (Russia)')),
     ('sk', _('Slovak')),
-    ('sv', _('Swedish')),
     ('tr', _('Turkish')),
     ('uk', _('Ukrainian')),
     ('vi', _('Vietnamese')),
-    ('zh-hans', _('Simplified Chinese')),
-    ('zh-hant', _('Traditional Chinese'))]
+    ('zh-hans', _('Chinese')),
+    ('zh-tw', _('Chinese (Taiwan)'))]
 LOCALE_PATHS = [os.path.join(PROJECT_ROOT, 'locale')]
 USE_I18N = True
 USE_L10N = True
@@ -166,7 +164,7 @@ TEMPLATES = [{
         'string_if_invalid': '<< MISSING VARIABLE "%s" >>' if DEBUG else ''}}]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = '$b_l&1(jhv6oiy-s$ah3zu)4or_)5pi)1l!ma#2_@35&tfjcfv'
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -371,11 +369,10 @@ bootstrap4 = {
     'form_renderers': {
         'default': 'saleor.core.utils.form_renderer.FormRenderer'}}
 
-TEST_RUNNER = 'tests.runner.PytestTestRunner'
+TEST_RUNNER = ''
 
 ALLOWED_HOSTS = get_list(
     os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1'))
-ALLOWED_GRAPHQL_ORIGINS = os.environ.get('ALLOWED_GRAPHQL_ORIGINS', '*')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -386,10 +383,8 @@ AWS_MEDIA_BUCKET_NAME = os.environ.get('AWS_MEDIA_BUCKET_NAME')
 AWS_MEDIA_CUSTOM_DOMAIN = os.environ.get('AWS_MEDIA_CUSTOM_DOMAIN')
 AWS_QUERYSTRING_AUTH = get_bool_from_env('AWS_QUERYSTRING_AUTH', False)
 AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_STATIC_CUSTOM_DOMAIN')
-AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_DEFAULT_ACL = os.environ.get('AWS_DEFAULT_ACL', None)
 
 if AWS_STORAGE_BUCKET_NAME:
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -554,10 +549,9 @@ SERIALIZATION_MODULES = {
 
 DUMMY = 'dummy'
 BRAINTREE = 'braintree'
-RAZORPAY = 'razorpay'
-
 CHECKOUT_PAYMENT_GATEWAYS = {
-    DUMMY: pgettext_lazy('Payment method name', 'Dummy gateway')}
+    DUMMY: pgettext_lazy('Payment method name', 'Dummy gateway')
+}
 
 PAYMENT_GATEWAYS = {
     DUMMY: {
@@ -570,16 +564,6 @@ PAYMENT_GATEWAYS = {
             'merchant_id': os.environ.get('BRAINTREE_MERCHANT_ID'),
             'public_key': os.environ.get('BRAINTREE_PUBLIC_KEY'),
             'private_key': os.environ.get('BRAINTREE_PRIVATE_KEY')
-        }
-    },
-    RAZORPAY: {
-        'module': 'saleor.payment.gateways.razorpay',
-        'connection_params': {
-            'public_key': os.environ.get('RAZORPAY_PUBLIC_KEY'),
-            'secret_key': os.environ.get('RAZORPAY_SECRET_KEY'),
-            'prefill': get_bool_from_env('RAZORPAY_PREFILL', True),
-            'store_name': os.environ.get('RAZORPAY_STORE_NAME'),
-            'store_image': os.environ.get('RAZORPAY_STORE_IMAGE')
         }
     }
 }
